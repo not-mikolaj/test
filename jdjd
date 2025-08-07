@@ -1,0 +1,11 @@
+@echo off
+
+set "SOURCE=%~dp0ReportIP"
+set "TARGET=C:\ProgramData\ReportIP"
+
+if not exist "%TARGET%" (
+    mkdir "%TARGET%"
+)
+
+xcopy "%SOURCE%" "%TARGET%\" /E /I /Y >nul
+copy "%SOURCE%\ReportIP.lnk" "%USERPROFILE%\Desktop\" /Y >nul
