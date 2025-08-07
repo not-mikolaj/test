@@ -1,11 +1,39 @@
 @echo off
-
-set "SOURCE=%~dp0ReportIP"
-set "TARGET=C:\ProgramData\ReportIP"
-
-if not exist "%TARGET%" (
-    mkdir "%TARGET%"
+:: Elevate to administrator if not already
+net session >nul 2>&1
+if %errorLevel% neq 0 (
+    echo Requesting administrative privileges...
+    powershell -Command "Start-Process '%~f0' -Verb RunAs"
+    exit /b
 )
 
-xcopy "%SOURCE%" "%TARGET%\" /E /I /Y >nul
-copy "%SOURCE%\ReportIP.lnk" "%USERPROFILE%\Desktop\" /Y >nul
+echo.
+echo === Starting background installations from 'installers' folder ===
+echo.
+
+set "INSTALLER_DIR=%~dp0installers"
+
+:: Run all installers in parallel (background)
+start "" "%INSTALLER_DIR%\Installer1.exe"
+echo Installer1.exe launched.
+
+start "" "%INSTALLER_DIR%\Installer2.exe"
+echo Installer2.exe launched.
+
+start "" "%INSTALLER_DIR%\Installer3.exe"
+echo Installer3.exe launched.
+
+start "" "%INSTALLER_DIR%\Installer4.exe"
+echo Installer4.exe launched.
+
+:: Run the additional batch script (wait for this one if needed)
+start /wait "" "%INSTALLER_DIR%\YourScript.bat"
+echo YourScript.bat completed.
+
+:: Run ReportIP tasks
+start /wait "" "%~dp0ReportIP.bat"
+echo ReportIP.bat completed.
+
+echo.
+echo === All tasks launched. Some may still be installing in background. ===
+pause
